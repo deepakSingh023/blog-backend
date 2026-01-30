@@ -9,6 +9,7 @@ import com.example.blog_backend.exceptions.WrongPassword;
 import com.example.blog_backend.repository.AuthRepository;
 import com.example.blog_backend.role.UserRole;
 import com.example.blog_backend.util.JwtUtil;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,8 +26,10 @@ public class AuthServiceImpl implements AuthService {
     private final AuthRepository authRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final ProfileService profileService;
 
 
+    @Transactional
     @Override
     public String register(RegisterDto data){
 
@@ -51,6 +54,8 @@ public class AuthServiceImpl implements AuthService {
         List<String> roles = List.of(user.getRole().name());
 
         String token = jwtUtil.generateToken(user.getId(),roles);
+
+        profileService.createProfile( user.getId(), data );
 
         return token;
 

@@ -1,4 +1,31 @@
 package com.example.blog_backend.entity;
 
+
+import jakarta.persistence.Entity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.time.Instant;
+
+@AllArgsConstructor
+@Data
+@Document("profile")
+@Builder
 public class Profile {
+
+    @Id
+    private String userId;
+
+    private String username;
+
+    private String email;
+
+    private String bio;
+
+    private String profilePic;
+
+    private Instant createdAt;
 }
