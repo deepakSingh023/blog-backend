@@ -27,5 +27,7 @@ public class Profile {
 
     private String profilePic;
 
+    private String profilePicPublicId;
+
     private Instant createdAt;
 }

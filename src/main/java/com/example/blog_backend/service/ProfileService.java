@@ -3,9 +3,10 @@ package com.example.blog_backend.service;
 import com.example.blog_backend.dto.RegisterDto;
 import com.example.blog_backend.dto.UpdateProfile;
 import com.example.blog_backend.entity.Profile;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface ProfileService {
 
     Profile createProfile(String userId, RegisterDto data);
-    Profile updateProfile(String userId, UpdateProfile data);
+    Profile updateProfile(String userId,String bio,  MultipartFile image );
 }

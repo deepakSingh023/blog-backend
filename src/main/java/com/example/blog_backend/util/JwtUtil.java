@@ -17,7 +17,7 @@ import java.util.UUID;
 public class JwtUtil {
 
 
-    @Value("${JWT_SECRET}")
+    @Value("${jwt-secret}")
     private String secret;
 
     private long refreshTime = 1000L * 60 * 60 * 24 * 7;
