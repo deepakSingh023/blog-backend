@@ -5,6 +5,8 @@ import com.example.blog_backend.dto.CloudinaryUploadResult;
 import com.example.blog_backend.dto.RegisterDto;
 import com.example.blog_backend.dto.UpdateProfile;
 import com.example.blog_backend.entity.Profile;
+import com.example.blog_backend.enums.FolderType;
+import com.example.blog_backend.enums.ImageType;
 import com.example.blog_backend.exceptions.UserAlreadyExistsException;
 import com.example.blog_backend.exceptions.UserDoesntExist;
 import com.example.blog_backend.repository.ProfileRepository;
@@ -60,7 +62,7 @@ public class ProfileServiceImpl implements ProfileService{
             if(profile.getProfilePicPublicId()!=null){
                 imageStorageService.deleteImage(profile.getProfilePicPublicId());
             }
-            CloudinaryUploadResult url = imageStorageService.uploadProfileImage(image);
+            CloudinaryUploadResult url = imageStorageService.uploadProfileImage(image, ImageType.PROFILE, FolderType.PROFILE);
 
             profile.setProfilePic(url.profileUrl());
             profile.setProfilePicPublicId(url.profilePicPublicId());

@@ -7,7 +7,7 @@ import com.example.blog_backend.exceptions.UserAlreadyExistsException;
 import com.example.blog_backend.exceptions.UserDoesntExist;
 import com.example.blog_backend.exceptions.WrongPassword;
 import com.example.blog_backend.repository.AuthRepository;
-import com.example.blog_backend.role.UserRole;
+import com.example.blog_backend.enums.UserRole;
 import com.example.blog_backend.util.JwtUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 
 
 @Service

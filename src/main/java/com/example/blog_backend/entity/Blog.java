@@ -19,6 +19,12 @@ public class Blog {
     @Id
     private String id;
 
+    private String userId;
+
+    private String image;
+
+    private String blogImagePublicId;
+
     private String title;
 
     private String content;

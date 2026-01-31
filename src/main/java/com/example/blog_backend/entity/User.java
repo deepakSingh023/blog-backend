@@ -1,7 +1,7 @@
 package com.example.blog_backend.entity;
 
 
-import com.example.blog_backend.role.UserRole;
+import com.example.blog_backend.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
 

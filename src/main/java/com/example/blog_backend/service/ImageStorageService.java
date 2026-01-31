@@ -4,6 +4,8 @@ package com.example.blog_backend.service;
 import com.cloudinary.Cloudinary;
 import com.example.blog_backend.config.CloudinaryConfig;
 import com.example.blog_backend.dto.CloudinaryUploadResult;
+import com.example.blog_backend.enums.FolderType;
+import com.example.blog_backend.enums.ImageType;
 import com.example.blog_backend.util.ImageCompressor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,14 +20,14 @@ public class ImageStorageService {
 
     private final Cloudinary cloudinary;
 
-    public CloudinaryUploadResult uploadProfileImage(MultipartFile file) {
+    public CloudinaryUploadResult uploadProfileImage(MultipartFile file , ImageType type, FolderType folder) {
         try {
-            byte[] compressed = ImageCompressor.compress(file);
+            byte[] compressed = ImageCompressor.compress(file, type);
 
             Map<?, ?> result = cloudinary.uploader().upload(
                     compressed,
                     Map.of(
-                            "folder", "profile-images",
+                            "folder", folder.type,
                             "resource_type", "image"
                     )
             );

@@ -1,6 +1,7 @@
 package com.example.blog_backend.controller;
 
 
+import com.example.blog_backend.dto.ReturnProfile;
 import com.example.blog_backend.dto.UpdateProfile;
 import com.example.blog_backend.entity.Profile;
 import com.example.blog_backend.service.ProfileService;
@@ -21,7 +22,7 @@ public class ProfileController {
     private final ProfileService profileService;
 
     @PostMapping("/profile")
-    public RequestEntity<Profile> updateProfile(
+    public ResponseEntity<ReturnProfile> updateProfile(
             @RequestPart(value = "bio", required = false) String bio,
             @RequestPart(value = "image", required = false) MultipartFile image,
             Authentication auth
@@ -30,7 +31,13 @@ public class ProfileController {
 
         Profile updatedProfile = profileService.updateProfile(userId, bio, image);
 
-        ResponseEntity.ok(updatedProfile);
+        ReturnProfile response = new ReturnProfile(
+                updatedProfile.getUsername(),
+                updatedProfile.getBio(),
+                updatedProfile.getProfilePic()
+        );
+
+        return  ResponseEntity.ok(response);
 
     }
 
