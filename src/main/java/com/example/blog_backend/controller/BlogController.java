@@ -9,10 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -45,6 +42,33 @@ public class BlogController {
         return ResponseEntity.ok(filtered);
 
         // never pass the entity directly to the response map it to a dto then send entity have sensitive data
+
+
+
+    }
+
+    @PutMapping(value="/update",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<BlogResponse> update(
+            @RequestPart(value = "image" , required = false) MultipartFile image,
+            @RequestPart(value = "updateBlog") CreateBlogDto data,
+            Authentication auth
+
+    ){
+
+        String userId = auth.getName();
+
+        Blog response = blogService.updateBlog(userId, data, image);
+
+        BlogResponse filtered = new BlogResponse(
+                response.getTitle(),
+                response.getContent(),
+                response.getTags(),
+                response.getImage(),
+                response.getCreatedAt()
+        );
+
+        return ResponseEntity.ok(filtered);
+
 
 
 

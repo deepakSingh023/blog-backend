@@ -40,7 +40,7 @@ public class BlogServiceImpl implements BlogService{
         }
 
         if (image != null && !image.isEmpty()) {
-            if(!image.getContentType().startsWith("/image")){
+            if(!image.getContentType().startsWith("image/")){
                 throw new IllegalArgumentException("only images allowed");
             }
 
@@ -49,7 +49,7 @@ public class BlogServiceImpl implements BlogService{
         CloudinaryUploadResult links = imageStorageService.uploadProfileImage(image, ImageType.BLOG, FolderType.BLOG);
 
         Blog create = Blog.builder()
-                .userId(userId)
+                .userId(userUuid)
                 .content(data.content())
                 .image(links.profileUrl())
                 .blogImagePublicId(links.profilePicPublicId())
@@ -63,5 +63,56 @@ public class BlogServiceImpl implements BlogService{
         blogRepository.save(create);
         return create;
 
+    }
+
+    @Override
+    public Blog updateBlog(String userId, CreateBlogDto data, MultipartFile image){
+        UUID userUuid;
+
+        try{
+            userUuid = UUID.fromString(userId);
+        }catch(IllegalArgumentException ex){
+            throw new IllegalArgumentException("userid is wrong");
+        }
+
+        if(!authRepository.existsById(userUuid)){
+            throw new UserDoesntExist("user doesnt exist");
+        }
+
+        Blog blog = blogRepository.findByUserId(userUuid)
+                .orElseThrow( () -> new UserDoesntExist("blog doesnt exist"));
+
+        if(data.content()!=null){
+            blog.setContent(data.content());
+        }
+
+        if(data.tags()!= null){
+            blog.setTags(data.tags());
+        }
+
+        if(data.title()!=null){
+            blog.setTitle(data.title());
+        }
+
+        if(image != null && !image.isEmpty() ){
+            if(!image.getContentType().startsWith("image/")){
+                throw new IllegalArgumentException("please provide an image");
+            }
+            if(blog.getBlogImagePublicId() !=null){
+                imageStorageService.deleteImage(blog.getBlogImagePublicId());
+            }
+
+            CloudinaryUploadResult url = imageStorageService.uploadProfileImage(image,ImageType.BLOG,FolderType.BLOG);
+
+            blog.setImage(url.profileUrl());
+            blog.setBlogImagePublicId(url.profilePicPublicId());
+
+
+
+        }
+
+        blogRepository.save(blog);
+
+        return blog;
     }
 }

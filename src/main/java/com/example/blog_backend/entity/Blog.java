@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 
 @Document("blog")
 @AllArgsConstructor
@@ -19,7 +20,7 @@ public class Blog {
     @Id
     private String id;
 
-    private String userId;
+    private UUID userId;
 
     private String image;
 
