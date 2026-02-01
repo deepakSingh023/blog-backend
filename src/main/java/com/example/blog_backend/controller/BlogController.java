@@ -3,15 +3,19 @@ package com.example.blog_backend.controller;
 
 import com.example.blog_backend.dto.BlogResponse;
 import com.example.blog_backend.dto.CreateBlogDto;
+import com.example.blog_backend.dto.PagedResponse;
 import com.example.blog_backend.entity.Blog;
 import com.example.blog_backend.service.BlogService;
+import com.example.blog_backend.util.BlogMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.Instant;
 import java.util.List;
 
 @RestController
@@ -96,30 +100,19 @@ public class BlogController {
     }
 
     @GetMapping("/getall")
-    public ResponseEntity<List<BlogResponse>> getAll(
+    public ResponseEntity<PagedResponse<BlogResponse>> getAll(
+            @RequestParam(required = false) Instant cursor,
+            @RequestParam(defaultValue = "10") int limit,
             Authentication auth
     ){
 
         String userId = auth.getName();
 
-        List<Blog> response = blogService.getBlogs(userId);
-
-        List<BlogResponse> allBlogs  = response.stream()
-                .map(blog->new BlogResponse(
-                        blog.getTitle(),
-                        blog.getContent(),
-                        blog.getTags(),
-                        blog.getImage(),
-                        blog.getLikes(),
-                        blog.getComments(),
-                        blog.getCreatedAt()
-                )).toList();
-
-        return ResponseEntity.ok(allBlogs);
+        PagedResponse<BlogResponse> blogs= blogService.getBlogs(userId, cursor, limit);
 
 
-        )
 
+        return ResponseEntity.ok(blogs);
 
     }
 }

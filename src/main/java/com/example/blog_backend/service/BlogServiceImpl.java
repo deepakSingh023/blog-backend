@@ -1,8 +1,10 @@
 package com.example.blog_backend.service;
 
 
+import com.example.blog_backend.dto.BlogResponse;
 import com.example.blog_backend.dto.CloudinaryUploadResult;
 import com.example.blog_backend.dto.CreateBlogDto;
+import com.example.blog_backend.dto.PagedResponse;
 import com.example.blog_backend.entity.Blog;
 import com.example.blog_backend.enums.FolderType;
 import com.example.blog_backend.enums.ImageType;
@@ -10,12 +12,15 @@ import com.example.blog_backend.exceptions.BlogNotFound;
 import com.example.blog_backend.exceptions.UserDoesntExist;
 import com.example.blog_backend.repository.AuthRepository;
 import com.example.blog_backend.repository.BlogRepository;
+import com.example.blog_backend.util.BlogMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.security.access.AccessDeniedException;
 
+import java.awt.print.Pageable;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -147,7 +152,7 @@ public class BlogServiceImpl implements BlogService{
     }
 
     @Override
-    public List<Blog> getBlogs(String userId){
+    public PagedResponse<BlogResponse> getBlogs(String userId, Instant cursor , int limit){
 
         UUID userUuid;
 
@@ -157,13 +162,26 @@ public class BlogServiceImpl implements BlogService{
             throw new IllegalArgumentException("provide a valid userId");
         }
 
-        List<Blog> blogs = blogRepository.findAllByUserId(userUuid);
+        List<Blog> blogs;
+
+        if(cursor == null){
+             blogs = blogRepository.findTop10ByUserIdOrderByCreatedAtDesc(userUuid);
+        }else{
+             blogs= blogRepository.findTop10ByUserIdAndCreatedAtLessThanOrderByCreatedAtDesc(userUuid,cursor);
+
+        }
 
         if(blogs.isEmpty()){
             throw new BlogNotFound("no blogs found");
         }
 
+        Instant nextCursor = blogs.isEmpty()? null : blogs.get(blogs.size()-1).getCreatedAt();
 
-        return blogs;
+        List<BlogResponse> allBlog = blogs.stream()
+                .map(BlogMapper::toResponse)
+                .toList();
+
+
+        return new PagedResponse<>(allBlog , nextCursor);
     }
 }
