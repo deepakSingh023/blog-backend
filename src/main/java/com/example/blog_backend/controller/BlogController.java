@@ -12,6 +12,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/blog")
 @RequiredArgsConstructor
@@ -36,6 +38,8 @@ public class BlogController {
                 response.getContent(),
                 response.getTags(),
                 response.getImage(),
+                response.getLikes(),
+                response.getComments(),
                 response.getCreatedAt()
         );
 
@@ -64,12 +68,57 @@ public class BlogController {
                 response.getContent(),
                 response.getTags(),
                 response.getImage(),
+                response.getLikes(),
+                response.getComments(),
                 response.getCreatedAt()
         );
 
         return ResponseEntity.ok(filtered);
 
 
+
+
+    }
+
+
+    @DeleteMapping("/delete/{blogId}")
+    public ResponseEntity<?> delete(
+            Authentication auth,
+            @RequestParam String blogId
+    ){
+
+        String userId = auth.getName();
+        blogService.deleteBlog(blogId,userId);
+
+
+        return ResponseEntity.noContent().build();
+
+    }
+
+    @GetMapping("/getall")
+    public ResponseEntity<List<BlogResponse>> getAll(
+            Authentication auth
+    ){
+
+        String userId = auth.getName();
+
+        List<Blog> response = blogService.getBlogs(userId);
+
+        List<BlogResponse> allBlogs  = response.stream()
+                .map(blog->new BlogResponse(
+                        blog.getTitle(),
+                        blog.getContent(),
+                        blog.getTags(),
+                        blog.getImage(),
+                        blog.getLikes(),
+                        blog.getComments(),
+                        blog.getCreatedAt()
+                )).toList();
+
+        return ResponseEntity.ok(allBlogs);
+
+
+        )
 
 
     }

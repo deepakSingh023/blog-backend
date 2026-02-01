@@ -16,6 +16,10 @@ public record BlogResponse(
 
         String image,
 
+        Long likes,
+
+        Long comments,
+
 
         Instant createdAt
 ) {

@@ -2,6 +2,7 @@ package com.example.blog_backend.handler;
 
 
 import com.example.blog_backend.dto.ErrorResponse;
+import com.example.blog_backend.exceptions.BlogNotFound;
 import com.example.blog_backend.exceptions.UserAlreadyExistsException;
 import com.example.blog_backend.exceptions.UserDoesntExist;
 import com.example.blog_backend.exceptions.WrongPassword;
@@ -11,6 +12,9 @@ import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import org.springframework.security.access.AccessDeniedException;
+
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -44,5 +48,21 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR) // 500
                 .body(new ErrorResponse("Internal server error"));
+    }
+
+    @ExceptionHandler(BlogNotFound.class)
+    public ResponseEntity<ErrorResponse> handleBlogNotFound(Exception ex){
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse("blog doesnt exist"));
+    }
+
+    @ExceptionHandler( AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDenied(Exception ex){
+
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(new ErrorResponse("you cannot access this blog"));
     }
 }

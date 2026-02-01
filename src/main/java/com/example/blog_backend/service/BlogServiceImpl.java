@@ -6,14 +6,17 @@ import com.example.blog_backend.dto.CreateBlogDto;
 import com.example.blog_backend.entity.Blog;
 import com.example.blog_backend.enums.FolderType;
 import com.example.blog_backend.enums.ImageType;
+import com.example.blog_backend.exceptions.BlogNotFound;
 import com.example.blog_backend.exceptions.UserDoesntExist;
 import com.example.blog_backend.repository.AuthRepository;
 import com.example.blog_backend.repository.BlogRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -114,5 +117,53 @@ public class BlogServiceImpl implements BlogService{
         blogRepository.save(blog);
 
         return blog;
+    }
+
+    @Override
+    public void deleteBlog(String blogId, String userId){
+
+        UUID userUuid ;
+
+        try{
+            userUuid = UUID.fromString(userId);
+        }catch(IllegalArgumentException ex){
+            throw new IllegalArgumentException("please provide a string userid");
+        }
+
+        Blog blog = blogRepository.findById(blogId)
+                .orElseThrow(() ->new BlogNotFound("blog not found"));
+
+        if(!blog.getUserId().equals(userUuid)){
+            throw new AccessDeniedException("you cannot access this blog");
+
+        }
+
+        if(blog.getBlogImagePublicId()!=null){
+            imageStorageService.deleteImage(blog.getBlogImagePublicId());
+        }
+
+        blogRepository.delete(blog);
+
+    }
+
+    @Override
+    public List<Blog> getBlogs(String userId){
+
+        UUID userUuid;
+
+        try{
+            userUuid = UUID.fromString(userId);
+        }catch(IllegalArgumentException ex){
+            throw new IllegalArgumentException("provide a valid userId");
+        }
+
+        List<Blog> blogs = blogRepository.findAllByUserId(userUuid);
+
+        if(blogs.isEmpty()){
+            throw new BlogNotFound("no blogs found");
+        }
+
+
+        return blogs;
     }
 }
