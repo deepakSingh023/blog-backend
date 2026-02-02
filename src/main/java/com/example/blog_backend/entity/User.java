@@ -5,7 +5,10 @@ import com.example.blog_backend.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
 
+
 import java.time.Instant;
+import java.util.UUID;
+
 
 @Entity
 @Table(name =  "users")
@@ -17,7 +20,7 @@ public class User {
 
     @Id
     @GeneratedValue
-    private String id;
+    private UUID id;
 
     @Column(nullable = false, unique = true)
     private String email;

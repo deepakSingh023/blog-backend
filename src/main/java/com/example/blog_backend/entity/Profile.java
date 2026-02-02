@@ -17,6 +17,8 @@ import java.time.Instant;
 public class Profile {
 
     @Id
+    private String id;
+
     private String userId;
 
     private String username;

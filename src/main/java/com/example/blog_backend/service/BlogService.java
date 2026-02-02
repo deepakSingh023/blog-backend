@@ -19,4 +19,5 @@ public interface BlogService {
     void deleteBlog(String blogId , String userId);
 
     PagedResponse<BlogResponse> getBlogs(String userId , Instant cursor, int limit);
+
 }

@@ -8,33 +8,20 @@ import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
-import java.util.List;
-import java.util.UUID;
 
-@Document("blog")
+@Document
 @AllArgsConstructor
-@Data
 @Builder
-public class Blog {
+@Data
+public class Likes {
 
     @Id
     private String id;
 
+    private String blogId;
+
     private String userId;
-
-    private String image;
-
-    private String blogImagePublicId;
-
-    private String title;
-
-    private String content;
-
-    private List<String> tags;
 
     private Instant createdAt;
 
-    private Long likes;
-
-    private Long comments;
 }

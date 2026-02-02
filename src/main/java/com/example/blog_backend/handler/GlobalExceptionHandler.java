@@ -2,10 +2,8 @@ package com.example.blog_backend.handler;
 
 
 import com.example.blog_backend.dto.ErrorResponse;
-import com.example.blog_backend.exceptions.BlogNotFound;
-import com.example.blog_backend.exceptions.UserAlreadyExistsException;
-import com.example.blog_backend.exceptions.UserDoesntExist;
-import com.example.blog_backend.exceptions.WrongPassword;
+import com.example.blog_backend.exceptions.*;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -64,5 +62,38 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
                 .body(new ErrorResponse("you cannot access this blog"));
+    }
+
+    @ExceptionHandler(LikesNotFound.class)
+    public ResponseEntity<ErrorResponse> handleLikeNotFound(Exception ex){
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse("like not found"));
+    }
+
+    @ExceptionHandler(ActionNotAllowed.class)
+    public ResponseEntity<ErrorResponse> handleActionNotAllowed(Exception ex){
+
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(new ErrorResponse("cannot delete other peoples like"));
+
+    }
+
+    @ExceptionHandler(CommentAlreadyExists.class)
+    public ResponseEntity<ErrorResponse> CommentAlreadyExists(Exception ex){
+
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body( new ErrorResponse("one comment already exists"));
+    }
+
+    @ExceptionHandler(CommentAlreadyExists.class)
+    public ResponseEntity<ErrorResponse> CommentDoesntExists(Exception ex){
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body( new ErrorResponse(" comment doesnt exists"));
     }
 }

@@ -7,8 +7,8 @@ import java.util.Optional;
 
 public interface ProfileRepository extends MongoRepository<Profile,String> {
 
-    public Boolean existsByUserId(String userId);
+     Boolean existsByUserId(String userId);
 
-    public Optional<Profile> findByUserId(String userId);
+     Optional<Profile> findByUserId(String userId);
 
 }

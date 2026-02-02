@@ -57,7 +57,7 @@ public class BlogServiceImpl implements BlogService{
         CloudinaryUploadResult links = imageStorageService.uploadProfileImage(image, ImageType.BLOG, FolderType.BLOG);
 
         Blog create = Blog.builder()
-                .userId(userUuid)
+                .userId(userId)
                 .content(data.content())
                 .image(links.profileUrl())
                 .blogImagePublicId(links.profilePicPublicId())
@@ -87,7 +87,7 @@ public class BlogServiceImpl implements BlogService{
             throw new UserDoesntExist("user doesnt exist");
         }
 
-        Blog blog = blogRepository.findByUserId(userUuid)
+        Blog blog = blogRepository.findByUserId(userId)
                 .orElseThrow( () -> new UserDoesntExist("blog doesnt exist"));
 
         if(data.content()!=null){
@@ -127,18 +127,11 @@ public class BlogServiceImpl implements BlogService{
     @Override
     public void deleteBlog(String blogId, String userId){
 
-        UUID userUuid ;
-
-        try{
-            userUuid = UUID.fromString(userId);
-        }catch(IllegalArgumentException ex){
-            throw new IllegalArgumentException("please provide a string userid");
-        }
 
         Blog blog = blogRepository.findById(blogId)
                 .orElseThrow(() ->new BlogNotFound("blog not found"));
 
-        if(!blog.getUserId().equals(userUuid)){
+        if(!blog.getUserId().equals(userId)){
             throw new AccessDeniedException("you cannot access this blog");
 
         }
@@ -154,20 +147,14 @@ public class BlogServiceImpl implements BlogService{
     @Override
     public PagedResponse<BlogResponse> getBlogs(String userId, Instant cursor , int limit){
 
-        UUID userUuid;
 
-        try{
-            userUuid = UUID.fromString(userId);
-        }catch(IllegalArgumentException ex){
-            throw new IllegalArgumentException("provide a valid userId");
-        }
 
         List<Blog> blogs;
 
         if(cursor == null){
-             blogs = blogRepository.findTop10ByUserIdOrderByCreatedAtDesc(userUuid);
+             blogs = blogRepository.findTop10ByUserIdOrderByCreatedAtDesc(userId);
         }else{
-             blogs= blogRepository.findTop10ByUserIdAndCreatedAtLessThanOrderByCreatedAtDesc(userUuid,cursor);
+             blogs= blogRepository.findTop10ByUserIdAndCreatedAtLessThanOrderByCreatedAtDesc(userId,cursor);
 
         }
 
@@ -184,4 +171,6 @@ public class BlogServiceImpl implements BlogService{
 
         return new PagedResponse<>(allBlog , nextCursor);
     }
+
+
 }
