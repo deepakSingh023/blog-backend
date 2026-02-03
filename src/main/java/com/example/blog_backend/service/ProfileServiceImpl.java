@@ -4,13 +4,20 @@ package com.example.blog_backend.service;
 import com.example.blog_backend.dto.CloudinaryUploadResult;
 import com.example.blog_backend.dto.RegisterDto;
 import com.example.blog_backend.dto.UpdateProfile;
+import com.example.blog_backend.entity.Blog;
+import com.example.blog_backend.entity.Comments;
 import com.example.blog_backend.entity.Profile;
 import com.example.blog_backend.enums.FolderType;
 import com.example.blog_backend.enums.ImageType;
 import com.example.blog_backend.exceptions.UserAlreadyExistsException;
 import com.example.blog_backend.exceptions.UserDoesntExist;
 import com.example.blog_backend.repository.ProfileRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,15 +26,17 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class ProfileServiceImpl implements ProfileService{
+public class ProfileServiceImpl implements ProfileService {
 
     private final ProfileRepository profileRepository;
     private final ImageStorageService imageStorageService;
 
-    @Override
-    public Profile createProfile(String userId, RegisterDto data){
+    private final MongoTemplate mongoTemplate;
 
-        if(profileRepository.existsByUserId(userId)){
+    @Override
+    public Profile createProfile(String userId, RegisterDto data) {
+
+        if (profileRepository.existsByUserId(userId)) {
             throw new UserAlreadyExistsException("profile already exists");
         }
 
@@ -44,32 +53,54 @@ public class ProfileServiceImpl implements ProfileService{
 
     }
 
+
+    @Transactional
     @Override
-    public Profile updateProfile(String userId , String bio , MultipartFile image){
+    public Profile updateProfile(String userId, String bio, MultipartFile image) {
 
         Profile profile = profileRepository.findByUserId(userId)
-                .orElseThrow(()-> new UserDoesntExist("profile doesnt exist"));
+                .orElseThrow(() -> new UserDoesntExist("profile doesnt exist"));
 
         if (bio != null) {
             profile.setBio(bio);
         }
+
+        String profileNew= null;
 
         if (image != null && !image.isEmpty()) {
 
             if (!image.getContentType().startsWith("image/")) {
                 throw new IllegalArgumentException("Only image files allowed");
             }
-            if(profile.getProfilePicPublicId()!=null){
+            if (profile.getProfilePicPublicId() != null) {
                 imageStorageService.deleteImage(profile.getProfilePicPublicId());
             }
             CloudinaryUploadResult url = imageStorageService.uploadProfileImage(image, ImageType.PROFILE, FolderType.PROFILE);
 
             profile.setProfilePic(url.profileUrl());
             profile.setProfilePicPublicId(url.profilePicPublicId());
+
+            profileNew = url.profileUrl();
+
         }
 
-        return profileRepository.save(profile);
+
+        Profile saved = profileRepository.save(profile);
+
+        if(profileNew !=null){
+            Query blogQuery = new Query(Criteria.where("userId").is(userId));
+            Update blogUpdate = new Update().set("userImage", profileNew);
+
+            mongoTemplate.updateMulti(blogQuery, blogUpdate, Blog.class);
+
+            Query commentQuery = new Query(Criteria.where("userId").is(userId));
+            Update updateQuery = new Update().set("userImage", profileNew);
+
+            mongoTemplate.updateMulti(commentQuery, updateQuery, Comments.class);
 
 
+        }
+        return  saved;
     }
+
 }

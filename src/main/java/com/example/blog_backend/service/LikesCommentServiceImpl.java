@@ -4,6 +4,7 @@ import com.example.blog_backend.dto.CommentCreation;
 import com.example.blog_backend.entity.Blog;
 import com.example.blog_backend.entity.Comments;
 import com.example.blog_backend.entity.Likes;
+import com.example.blog_backend.entity.Profile;
 import com.example.blog_backend.exceptions.*;
 import com.example.blog_backend.repository.*;
 import jakarta.transaction.Transactional;
@@ -24,6 +25,8 @@ public class LikesCommentServiceImpl implements LikesCommentService{
 
     private final AuthRepository authRepository;
     private final BlogRepository blogRepository;
+
+    private final ProfileRepository profileRepository;
 
     private final IncrementRepository incrementRepository;
 
@@ -50,6 +53,7 @@ public class LikesCommentServiceImpl implements LikesCommentService{
         if(!blogRepository.existsById(blogId)){
             throw new BlogNotFound("blog doesnt exist");
         }
+
 
         Likes like = Likes.builder()
                 .userId(userId)
@@ -107,10 +111,15 @@ public class LikesCommentServiceImpl implements LikesCommentService{
 
         }
 
+        Profile profile = profileRepository.findByUserId(userId)
+                .orElseThrow(()-> new UserDoesntExist("user doesnt exist"));
+
         Comments comment = Comments.builder()
                 .userId(userId)
                 .blogId(content.blogId())
                 .content(content.content())
+                .username(profile.getUsername())
+                .userImage(profile.getProfilePic())
                 .createdAt(Instant.now())
                 .build();
 
