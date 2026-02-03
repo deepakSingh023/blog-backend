@@ -23,6 +23,10 @@ public class Comments {
 
     private String blogId;
 
+    private String username;
+
+    private String userImage;
+
     private String content;
 
     private Instant createdAt;

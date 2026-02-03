@@ -22,6 +22,13 @@ public interface BlogRepository extends MongoRepository<Blog,String> {
     // First page: no cursor
     List<Blog> findTop10ByUserIdOrderByCreatedAtDesc(String userId);
 
+    List<Blog> findTop10ByOrderByCreatedAtDesc();
+
+    List<Blog> findTop10ByCreatedAtBeforeOrderByCreatedAtDesc(
+            Instant createdAt
+    );
+
+
     // Next pages: cursor exists
     List<Blog> findTop10ByUserIdAndCreatedAtLessThanOrderByCreatedAtDesc(String userId, Instant cursor);
 

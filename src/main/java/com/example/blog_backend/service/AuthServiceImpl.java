@@ -52,9 +52,9 @@ public class AuthServiceImpl implements AuthService {
 
         List<String> roles = List.of(user.getRole().name());
 
-        String token = jwtUtil.generateToken(user.getId(),roles);
+        String token = jwtUtil.generateToken(user.getId().toString(),roles);
 
-        profileService.createProfile( user.getId(), data );
+        profileService.createProfile( user.getId().toString(), data );
 
         return token;
 
@@ -71,7 +71,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         List<String> roles = List.of(user.getRole().name());
-        String token = jwtUtil.generateToken(user.getId(), roles);
+        String token = jwtUtil.generateToken(user.getId().toString(), roles);
 
         return new AuthResult(
                 token,

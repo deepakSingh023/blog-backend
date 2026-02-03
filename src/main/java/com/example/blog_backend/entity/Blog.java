@@ -5,6 +5,7 @@ import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
@@ -22,6 +23,10 @@ public class Blog {
 
     private String userId;
 
+    private String username;
+
+    private String userImage;
+
     private String image;
 
     private String blogImagePublicId;
@@ -37,4 +42,7 @@ public class Blog {
     private Long likes;
 
     private Long comments;
+
+    @Transient
+    private Double score;
 }
