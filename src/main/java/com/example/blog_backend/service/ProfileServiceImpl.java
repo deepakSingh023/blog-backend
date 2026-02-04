@@ -54,12 +54,14 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
 
-    @Transactional
+    //@Transactional
     @Override
     public Profile updateProfile(String userId, String bio, MultipartFile image) {
 
         Profile profile = profileRepository.findByUserId(userId)
                 .orElseThrow(() -> new UserDoesntExist("profile doesnt exist"));
+
+        System.out.print(profile);
 
         if (bio != null) {
             profile.setBio(bio);
@@ -83,6 +85,7 @@ public class ProfileServiceImpl implements ProfileService {
             profileNew = url.profileUrl();
 
         }
+
 
 
         Profile saved = profileRepository.save(profile);

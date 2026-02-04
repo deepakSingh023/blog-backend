@@ -1,17 +1,16 @@
 package com.example.blog_backend.service;
 
 
-import com.example.blog_backend.dto.BlogResponse;
-import com.example.blog_backend.dto.CloudinaryUploadResult;
-import com.example.blog_backend.dto.CreateBlogDto;
-import com.example.blog_backend.dto.PagedResponse;
+import com.example.blog_backend.dto.*;
 import com.example.blog_backend.entity.Blog;
+import com.example.blog_backend.entity.Profile;
 import com.example.blog_backend.enums.FolderType;
 import com.example.blog_backend.enums.ImageType;
 import com.example.blog_backend.exceptions.BlogNotFound;
 import com.example.blog_backend.exceptions.UserDoesntExist;
 import com.example.blog_backend.repository.AuthRepository;
 import com.example.blog_backend.repository.BlogRepository;
+import com.example.blog_backend.repository.ProfileRepository;
 import com.example.blog_backend.util.BlogMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,19 +22,34 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
+//create,update and get working
 @Service
-@RequiredArgsConstructor
 public class BlogServiceImpl implements BlogService{
 
     private final BlogRepository blogRepository;
-
     private final AuthRepository authRepository;
     private final ImageStorageService imageStorageService;
+
+    private final ProfileRepository profileRepository;
+
+
+    public BlogServiceImpl(
+            BlogRepository blogRepository,
+            AuthRepository authRepository,
+            ImageStorageService imageStorageService, ProfileRepository profileRepository) {
+        System.out.println("🔴 BlogServiceImpl CONSTRUCTOR called");
+        this.blogRepository = blogRepository;
+        this.authRepository = authRepository;
+        this.imageStorageService = imageStorageService;
+        this.profileRepository = profileRepository;
+
+    }
 
     @Override
     public Blog createBlog(String userId, CreateBlogDto data , MultipartFile image){
 
+
+        System.out.print("inservice");
         UUID userUuid;
         try {
             userUuid = UUID.fromString(userId);
@@ -43,9 +57,16 @@ public class BlogServiceImpl implements BlogService{
             throw new RuntimeException("Invalid user ID format");
         }
 
+
+
+
+
         if(!authRepository.existsById(userUuid)){
             throw new UserDoesntExist("user doesnt exist");
         }
+
+        Profile profile = profileRepository.findById(userId)
+                .orElseThrow(()-> new UserDoesntExist(" user doesnt exist"));
 
         if (image != null && !image.isEmpty()) {
             if(!image.getContentType().startsWith("image/")){
@@ -61,6 +82,8 @@ public class BlogServiceImpl implements BlogService{
                 .content(data.content())
                 .image(links.profileUrl())
                 .blogImagePublicId(links.profilePicPublicId())
+                .username(profile.getUsername())
+                .userImage(profile.getProfilePic())
                 .tags(data.tags())
                 .title(data.title())
                 .createdAt(Instant.now())
@@ -74,7 +97,7 @@ public class BlogServiceImpl implements BlogService{
     }
 
     @Override
-    public Blog updateBlog(String userId, CreateBlogDto data, MultipartFile image){
+    public Blog updateBlog(String userId, UpdateBlog data, MultipartFile image){
         UUID userUuid;
 
         try{
@@ -87,7 +110,7 @@ public class BlogServiceImpl implements BlogService{
             throw new UserDoesntExist("user doesnt exist");
         }
 
-        Blog blog = blogRepository.findByUserId(userId)
+        Blog blog = blogRepository.findById(data.blogId())
                 .orElseThrow( () -> new UserDoesntExist("blog doesnt exist"));
 
         if(data.content()!=null){

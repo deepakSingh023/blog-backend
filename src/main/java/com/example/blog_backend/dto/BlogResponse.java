@@ -7,6 +7,9 @@ import java.util.List;
 
 public record BlogResponse(
 
+
+        String id,
+
         String title,
 
 

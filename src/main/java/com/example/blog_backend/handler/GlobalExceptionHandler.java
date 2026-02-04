@@ -41,11 +41,12 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGeneric(Exception ex) {
-
+    public ResponseEntity<String> handleAllExceptions(Exception ex) {
+        System.out.println("🔴🔴🔴 GLOBAL EXCEPTION CAUGHT: " + ex.getMessage());
+        ex.printStackTrace();
         return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR) // 500
-                .body(new ErrorResponse("Internal server error"));
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error: " + ex.getMessage());
     }
 
     @ExceptionHandler(BlogNotFound.class)
@@ -89,11 +90,13 @@ public class GlobalExceptionHandler {
                 .body( new ErrorResponse("one comment already exists"));
     }
 
-    @ExceptionHandler(CommentAlreadyExists.class)
+    @ExceptionHandler(CommentDoesntExist.class)
     public ResponseEntity<ErrorResponse> CommentDoesntExists(Exception ex){
 
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body( new ErrorResponse(" comment doesnt exists"));
     }
+
+
 }

@@ -19,6 +19,5 @@ public class RegisterDto {
     @NotBlank
     private String email;
 
-    @NotBlank
-    private boolean isAuthor;
+
 }

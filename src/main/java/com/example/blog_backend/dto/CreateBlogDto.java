@@ -12,7 +12,7 @@ public record CreateBlogDto(
         @NotBlank
         String content,
 
-        @NotBlank
+
         List<String> tags
 
 ) {

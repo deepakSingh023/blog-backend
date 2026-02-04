@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.TextCriteria;
 import org.springframework.data.mongodb.core.query.TextQuery;
@@ -19,8 +20,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
-
+import java.util.Set;
+//both working
 @Service
 @RequiredArgsConstructor
 public class FeedServiceImpl implements FeedService {
@@ -53,20 +56,13 @@ public class FeedServiceImpl implements FeedService {
     }
 
 
-
     @Override
     public List<SearchResult> getSearch(String query) {
-
         List<SearchResult> results = new ArrayList<>();
 
-        // -------- BLOG SEARCH --------
-        TextCriteria blogCriteria =
-                TextCriteria.forDefaultLanguage().matching(query);
-
-        Query blogQuery = TextQuery.queryText(blogCriteria)
-                .sortByScore()
-                .limit(20);
-
+        // -------- BLOG SEARCH (text search) --------
+        TextCriteria blogCriteria = TextCriteria.forDefaultLanguage().matching(query);
+        Query blogQuery = TextQuery.queryText(blogCriteria).sortByScore().limit(20);
         List<Blog> blogs = mongoTemplate.find(blogQuery, Blog.class);
 
         for (Blog blog : blogs) {
@@ -78,14 +74,10 @@ public class FeedServiceImpl implements FeedService {
             ));
         }
 
-        // -------- PROFILE SEARCH --------
-        TextCriteria profileCriteria =
-                TextCriteria.forDefaultLanguage().matching(query);
-
-        Query profileQuery = TextQuery.queryText(profileCriteria)
-                .sortByScore()
-                .limit(20);
-
+        // -------- PROFILE SEARCH (regex for substring) --------
+        Query profileQuery = new Query();
+        profileQuery.addCriteria(Criteria.where("username").regex(".*" + query + ".*", "i"));
+        profileQuery.limit(20);
         List<Profile> profiles = mongoTemplate.find(profileQuery, Profile.class);
 
         for (Profile profile : profiles) {
@@ -97,12 +89,12 @@ public class FeedServiceImpl implements FeedService {
             ));
         }
 
-        // -------- MERGE & SORT --------
+        // Sort results by score (highest first)
         results.sort((a, b) -> Double.compare(b.getScore(), a.getScore()));
 
-        return results.stream()
-                .limit(10)
-                .toList();
+        // Return top 10 results
+        return results.stream().limit(10).toList();
     }
+
 }
 

@@ -7,7 +7,7 @@ import com.example.blog_backend.entity.Likes;
 public interface LikesCommentService {
 
 
-    Likes createLikes(String userId, String blogId);
+    boolean createLikes(String userId, String blogId);
 
     void removeLikes(String userId, String blogId);
 

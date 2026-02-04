@@ -22,8 +22,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-@Component
+
 @RequiredArgsConstructor
+@Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil util;
@@ -35,37 +36,66 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
-        String authHead = request.getHeader("Authentication");
+        System.out.println("🔴 FILTER START");
 
-        if(authHead != null && authHead.startsWith("Bearer")){
-            String token = authHead.substring(7);
+        try {
+            String authHead = request.getHeader("Authorization");
 
-            try {
-                Claims claims = util.extractAllClaims(token);
+            System.out.println("DISPATCH TYPE: " + request.getDispatcherType());
+            System.out.println("Processing request: " + request.getMethod() + " " + request.getRequestURI());
+            System.out.println("Auth Header: " + authHead);
 
-                UUID userId = UUID.fromString(claims.getSubject());
-                List<String> roles = claims.get("roles", List.class);
+            if (authHead != null && authHead.startsWith("Bearer ")) {
+                String token = authHead.substring(7);
 
-                List<SimpleGrantedAuthority> auth =
-                        roles.stream()
-                                .map(SimpleGrantedAuthority::new)
-                                .toList();
+                try {
+                    System.out.println("Starting token extraction...");
+                    Claims claims = util.extractAllClaims(token);
+                    String userId = util.extractUserId(token);
+                    System.out.println("Extracted UserId: " + userId);
 
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(userId,null,auth);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                    List<?> rawRoles = claims.get("roles", List.class);
+                    List<SimpleGrantedAuthority> authorities =
+                            rawRoles == null ?
+                                    Collections.emptyList() :
+                                    rawRoles.stream()
+                                            .map(Object::toString)
+                                            .map(SimpleGrantedAuthority::new)
+                                            .toList();
 
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(
+                                    userId,
+                                    null,
+                                    authorities
+                            );
 
-            } catch (JwtException e) {
+                    SecurityContextHolder
+                            .getContext()
+                            .setAuthentication(authentication);
 
+                } catch (JwtException e) {
+                    System.out.println("JWT ERROR: " + e.getMessage());
+                    e.printStackTrace();
+                    SecurityContextHolder.clearContext();
+                }
             }
 
+            System.out.println("🔴 Before doFilter - async: " + request.isAsyncStarted());
+            filterChain.doFilter(request, response);
+            System.out.println("🔴 After doFilter - async: " + request.isAsyncStarted());
 
+        } catch (Exception e) {
+            System.out.println("🔴🔴🔴 EXCEPTION IN FILTER: " + e.getClass().getName());
+            System.out.println("🔴🔴🔴 MESSAGE: " + e.getMessage());
+            e.printStackTrace();
+
+            // Send error response
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().write("Filter error: " + e.getMessage());
+            return; // Don't continue the chain
         }
 
-        filterChain.doFilter(request,response);
-
+        System.out.println("🔴 FILTER END");
     }
-
-
 }

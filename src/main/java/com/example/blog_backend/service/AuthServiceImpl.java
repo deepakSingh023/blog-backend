@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.List;
 
-
+//register login both working
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {

@@ -7,6 +7,7 @@ public class BlogMapper {
 
     public static BlogResponse toResponse(Blog blog) {
         return new BlogResponse(
+                blog.getId(),
                 blog.getTitle(),
                 blog.getContent(),
                 blog.getTags(),

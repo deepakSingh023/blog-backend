@@ -32,7 +32,7 @@ public class LikesCommentServiceImpl implements LikesCommentService{
 
     @Override
     @Transactional
-    public Likes createLikes(String userId,String blogId){
+    public boolean createLikes(String userId,String blogId){
 
         if (likesRepository.existsByUserIdAndBlogId(userId, blogId)) {
             throw new LikeAlreadyExist("liek already exists");
@@ -65,7 +65,7 @@ public class LikesCommentServiceImpl implements LikesCommentService{
 
         incrementRepository.likesIncrement(blogId);
 
-        return like;
+        return true;
 
     }
 
@@ -73,12 +73,11 @@ public class LikesCommentServiceImpl implements LikesCommentService{
 
     @Override
     @Transactional
-    public void removeLikes(String userId, String likeId){
+    public void removeLikes(String userId, String blogId){
 
-        Likes like = likesRepository.findById(likeId)
+        Likes like = likesRepository.findByUserIdAndBlogId(userId,blogId)
                 .orElseThrow(()-> new LikesNotFound("likes not found"));
 
-        String blogId = like.getBlogId();
 
         if(!like.getUserId().equals(userId)){
             throw new ActionNotAllowed("Not authorized to delete this like");
@@ -106,7 +105,7 @@ public class LikesCommentServiceImpl implements LikesCommentService{
             throw new UserDoesntExist("user doesnt exist");
         }
 
-        if(commentRepository.ExistsByUserIdAndBlogId(userId , content.blogId())){
+        if(commentRepository.existsByUserIdAndBlogId(userId , content.blogId())){
             throw new CommentAlreadyExists("cannot create multipel comment for a single post by same user");
 
         }

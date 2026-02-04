@@ -4,6 +4,7 @@ package com.example.blog_backend.controller;
 import com.example.blog_backend.dto.BlogResponse;
 import com.example.blog_backend.dto.CreateBlogDto;
 import com.example.blog_backend.dto.PagedResponse;
+import com.example.blog_backend.dto.UpdateBlog;
 import com.example.blog_backend.entity.Blog;
 import com.example.blog_backend.service.BlogService;
 import com.example.blog_backend.util.BlogMapper;
@@ -20,10 +21,16 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/blog")
-@RequiredArgsConstructor
 public class BlogController {
 
     private final BlogService blogService;
+
+    public BlogController(BlogService blogService){
+        System.out.println("🔴 BlogController CONSTRUCTOR called");
+        System.out.println("🔴 BlogService injected: " + (blogService != null));
+        this.blogService = blogService;
+    }
+
 
     @PostMapping(value="/create" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BlogResponse> create(
@@ -33,12 +40,15 @@ public class BlogController {
             Authentication auth
             ){
 
+        System.out.print("reached blog controller");
+
         String userId = auth.getName();
 
         Blog response = blogService.createBlog(userId,data, image);
 
         BlogResponse filtered = new BlogResponse(
                 response.getTitle(),
+                response.getId(),
                 response.getContent(),
                 response.getTags(),
                 response.getImage(),
@@ -58,16 +68,19 @@ public class BlogController {
     @PutMapping(value="/update",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BlogResponse> update(
             @RequestPart(value = "image" , required = false) MultipartFile image,
-            @RequestPart(value = "updateBlog") CreateBlogDto data,
+            @RequestPart(value = "updateBlog") UpdateBlog data,
             Authentication auth
 
     ){
 
         String userId = auth.getName();
 
+        System.out.println(data.blogId());
+
         Blog response = blogService.updateBlog(userId, data, image);
 
         BlogResponse filtered = new BlogResponse(
+                response.getId(),
                 response.getTitle(),
                 response.getContent(),
                 response.getTags(),
@@ -102,7 +115,7 @@ public class BlogController {
     @GetMapping("/getall")
     public ResponseEntity<PagedResponse<BlogResponse>> getAll(
             @RequestParam(required = false) Instant cursor,
-            @RequestParam(defaultValue = "10") int limit,
+            @RequestParam(defaultValue = "10",required = false ) int limit,
             Authentication auth
     ){
 

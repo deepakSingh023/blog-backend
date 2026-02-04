@@ -38,16 +38,17 @@ public class JwtUtil {
 
 
 
+    // In JwtUtil.java
     public Claims extractAllClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
-    public UUID extractUserId(String token) {
-        return UUID.fromString(extractAllClaims(token).getSubject());
+    public String extractUserId(String token) {
+        return extractAllClaims(token).getSubject();
     }
 
     public List<String> extractRoles(String token) {

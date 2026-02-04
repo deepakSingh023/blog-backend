@@ -1,6 +1,7 @@
 package com.example.blog_backend.repository;
 
 import com.example.blog_backend.entity.Blog;
+import com.example.blog_backend.entity.Comments;
 import org.springframework.data.domain.Page;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
@@ -17,6 +18,8 @@ import java.util.UUID;
 public interface BlogRepository extends MongoRepository<Blog,String> {
 
     Optional<Blog> findByUserId( String userId);
+
+    List<Blog> findAllByUserId(String userId);
 
 
     // First page: no cursor

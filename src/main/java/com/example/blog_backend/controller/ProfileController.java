@@ -21,13 +21,20 @@ public class ProfileController {
 
     private final ProfileService profileService;
 
-    @PostMapping("/profile")
+
+    @PostMapping(value = "/update", consumes = "multipart/form-data")
     public ResponseEntity<ReturnProfile> updateProfile(
-            @RequestPart(value = "bio", required = false) String bio,
-            @RequestPart(value = "image", required = false) MultipartFile image,
+            @RequestParam(value = "bio", required = false) String bio,
+            @RequestParam(value = "image", required = false) MultipartFile image,
             Authentication auth
     ){
+
         String userId = auth.getName();
+        System.out.println(">>> SUCCESS: Reached Controller!");
+        System.out.println(">>> User from Auth: " + userId);
+
+        System.out.println(bio);
+
 
         Profile updatedProfile = profileService.updateProfile(userId, bio, image);
 
@@ -37,8 +44,9 @@ public class ProfileController {
                 updatedProfile.getProfilePic()
         );
 
-        return  ResponseEntity.ok(response);
 
+
+        return ResponseEntity.ok(response);
     }
 
 }
