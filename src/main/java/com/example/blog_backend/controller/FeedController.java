@@ -23,16 +23,14 @@ public class FeedController {
 
 
     @GetMapping("/feed")
-    public ResponseEntity<FeedResponse> getFeed(
-            @RequestParam(required = false) Instant cursor
-    ){
+    public FeedResponse getFeed(
+            @RequestParam(required = false) Instant cursor,
+            @RequestParam(required = false) String userId
 
-        FeedResponse response = feedService.getFeed(cursor);
-
-        return ResponseEntity
-                .ok(response);
-
+    ) {
+        return feedService.getFeed(cursor, userId);
     }
+
 
 
     @GetMapping("/search")

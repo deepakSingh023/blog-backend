@@ -3,6 +3,7 @@ package com.example.blog_backend.service;
 
 import com.example.blog_backend.dto.CloudinaryUploadResult;
 import com.example.blog_backend.dto.RegisterDto;
+import com.example.blog_backend.dto.ReturnProfile;
 import com.example.blog_backend.dto.UpdateProfile;
 import com.example.blog_backend.entity.Blog;
 import com.example.blog_backend.entity.Comments;
@@ -11,6 +12,7 @@ import com.example.blog_backend.enums.FolderType;
 import com.example.blog_backend.enums.ImageType;
 import com.example.blog_backend.exceptions.UserAlreadyExistsException;
 import com.example.blog_backend.exceptions.UserDoesntExist;
+import com.example.blog_backend.repository.AuthRepository;
 import com.example.blog_backend.repository.ProfileRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +35,7 @@ public class ProfileServiceImpl implements ProfileService {
     private final ImageStorageService imageStorageService;
 
     private final MongoTemplate mongoTemplate;
+    private final AuthRepository authRepository;
 
     @Override
     public Profile createProfile(String userId, RegisterDto data) {
@@ -104,6 +108,32 @@ public class ProfileServiceImpl implements ProfileService {
 
         }
         return  saved;
+    }
+
+    @Override
+    public ReturnProfile getProfile(String userId){
+
+        UUID userUuid;
+
+        try{
+            userUuid = UUID.fromString(userId);
+
+        }catch(IllegalArgumentException ex){
+            throw new RuntimeException("Illegal id format");
+        }
+
+        if(!authRepository.existsById(userUuid)){
+            throw new UserDoesntExist(" user doesnt exist");
+        }
+
+        Profile profile = profileRepository.findByUserId(userId)
+                .orElseThrow(()-> new UserDoesntExist("no profile found for user"));
+
+        return new ReturnProfile(
+                profile.getUsername(),
+                profile.getBio(),
+                profile.getProfilePic()
+        );
     }
 
 }

@@ -11,7 +11,7 @@ import java.util.List;
 public interface FeedService {
 
 
-    FeedResponse getFeed(Instant cursorCreatedAt);
+    FeedResponse getFeed(Instant cursorCreatedAt, String userId);
 
     List<SearchResult> getSearch(String query);
 }

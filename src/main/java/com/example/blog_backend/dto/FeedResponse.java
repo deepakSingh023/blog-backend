@@ -6,7 +6,7 @@ import java.time.Instant;
 import java.util.List;
 
 public record FeedResponse(
-        List<Blog> blogs,
+        List<FeedBlogDto> blogs,
         Instant cursor
 ) {
 }

@@ -1,11 +1,13 @@
 package com.example.blog_backend.service;
 
 
+import com.example.blog_backend.dto.FeedBlogDto;
 import com.example.blog_backend.dto.FeedResponse;
 import com.example.blog_backend.dto.SearchResult;
 import com.example.blog_backend.entity.Blog;
 import com.example.blog_backend.entity.Profile;
 import com.example.blog_backend.repository.BlogRepository;
+import com.example.blog_backend.repository.LikesRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -19,10 +21,8 @@ import org.springframework.data.mongodb.core.query.TextQuery;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+
 //both working
 @Service
 @RequiredArgsConstructor
@@ -32,28 +32,53 @@ public class FeedServiceImpl implements FeedService {
 
     private final BlogRepository blogRepository;
 
+    private final LikesRepository likesRepository;
+
 
     @Override
-    public FeedResponse getFeed(Instant cursorCreatedAt) {
+    public FeedResponse getFeed(Instant cursorCreatedAt, String userId) {
 
         List<Blog> blogs;
 
         if (cursorCreatedAt == null) {
-            // first page
             blogs = blogRepository.findTop10ByOrderByCreatedAtDesc();
         } else {
-            // next page
-            blogs = blogRepository.findTop10ByCreatedAtBeforeOrderByCreatedAtDesc(cursorCreatedAt);
+            blogs = blogRepository
+                    .findTop10ByCreatedAtBeforeOrderByCreatedAtDesc(cursorCreatedAt);
         }
 
-        // determine next cursor
-        Instant nextCursor = null;
-        if (!blogs.isEmpty()) {
-            nextCursor = blogs.get(blogs.size() - 1).getCreatedAt();
-        }
+        Instant nextCursor = blogs.isEmpty()
+                ? null
+                : blogs.get(blogs.size() - 1).getCreatedAt();
 
-        return new FeedResponse(blogs, nextCursor);
+        // 1️⃣ Extract blog IDs
+        List<String> blogIds = blogs.stream()
+                .map(Blog::getId)
+                .toList();
+
+        // 2️⃣ Fetch liked blog IDs (only if userId exists)
+        Set<String> likedBlogIds =
+                (userId == null || blogIds.isEmpty())
+                        ? Set.of()
+                        : new HashSet<>(
+                        likesRepository.findLikedBlogIdsByUser(userId, blogIds)
+                );
+
+        // 3️⃣ Map to feed DTO
+        List<FeedBlogDto> feedBlogs = blogs.stream()
+                .map(blog -> new FeedBlogDto(
+                        blog.getId(),
+                        blog.getTitle(),
+                        blog.getContent(),
+                        blog.getLikes(),
+                        likedBlogIds.contains(blog.getId()),
+                        blog.getCreatedAt()
+                ))
+                .toList();
+
+        return new FeedResponse(feedBlogs, nextCursor);
     }
+
 
 
     @Override

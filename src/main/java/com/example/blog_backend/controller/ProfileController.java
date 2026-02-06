@@ -49,4 +49,17 @@ public class ProfileController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/getProfile")
+    public ResponseEntity<ReturnProfile> getProfile(
+            Authentication auth
+    ){
+
+        String userId = auth.getName();
+
+        ReturnProfile res = profileService.getProfile(userId);
+
+        return ResponseEntity.ok(res);
+
+    }
+
 }
