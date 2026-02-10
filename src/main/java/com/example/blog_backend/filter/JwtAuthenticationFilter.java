@@ -36,23 +36,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
-        System.out.println("🔴 FILTER START");
 
         try {
             String authHead = request.getHeader("Authorization");
 
-            System.out.println("DISPATCH TYPE: " + request.getDispatcherType());
-            System.out.println("Processing request: " + request.getMethod() + " " + request.getRequestURI());
-            System.out.println("Auth Header: " + authHead);
 
             if (authHead != null && authHead.startsWith("Bearer ")) {
                 String token = authHead.substring(7);
 
                 try {
-                    System.out.println("Starting token extraction...");
+
                     Claims claims = util.extractAllClaims(token);
                     String userId = util.extractUserId(token);
-                    System.out.println("Extracted UserId: " + userId);
 
                     List<?> rawRoles = claims.get("roles", List.class);
                     List<SimpleGrantedAuthority> authorities =
@@ -75,19 +70,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             .setAuthentication(authentication);
 
                 } catch (JwtException e) {
-                    System.out.println("JWT ERROR: " + e.getMessage());
+
                     e.printStackTrace();
                     SecurityContextHolder.clearContext();
                 }
             }
 
-            System.out.println("🔴 Before doFilter - async: " + request.isAsyncStarted());
+
             filterChain.doFilter(request, response);
-            System.out.println("🔴 After doFilter - async: " + request.isAsyncStarted());
+
 
         } catch (Exception e) {
-            System.out.println("🔴🔴🔴 EXCEPTION IN FILTER: " + e.getClass().getName());
-            System.out.println("🔴🔴🔴 MESSAGE: " + e.getMessage());
             e.printStackTrace();
 
             // Send error response
@@ -95,7 +88,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             response.getWriter().write("Filter error: " + e.getMessage());
             return; // Don't continue the chain
         }
-
-        System.out.println("🔴 FILTER END");
     }
 }

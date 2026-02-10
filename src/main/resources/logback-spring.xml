@@ -1,0 +1,18 @@
+<configuration>
+
+    <property name="LOG_PATTERNS"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} traceId=%X{traceId} - %msg%n"/>
+
+    <appender name="CONSOLE_APPENDER"
+    class ="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${LOG_PATTERNS}</pattern>
+        </encoder>
+    </appender>
+
+
+    <root  level="INFO">
+        <appender-ref  ref="CONSOLE_APPENDER"/>
+    </root>
+
+</configuration>

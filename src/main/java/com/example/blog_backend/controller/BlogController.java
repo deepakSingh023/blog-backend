@@ -23,8 +23,6 @@ public class BlogController {
     private final BlogService blogService;
 
     public BlogController(BlogService blogService){
-        System.out.println("🔴 BlogController CONSTRUCTOR called");
-        System.out.println("🔴 BlogService injected: " + (blogService != null));
         this.blogService = blogService;
     }
 
