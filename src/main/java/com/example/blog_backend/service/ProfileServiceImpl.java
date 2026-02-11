@@ -33,6 +33,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     private final ProfileRepository profileRepository;
     private final ImageStorageService imageStorageService;
+    private final BlogAndCommentDenormalization blogAndCommentDenormalization;
 
     private final MongoTemplate mongoTemplate;
     private final AuthRepository authRepository;
@@ -95,17 +96,7 @@ public class ProfileServiceImpl implements ProfileService {
         Profile saved = profileRepository.save(profile);
 
         if(profileNew !=null){
-            Query blogQuery = new Query(Criteria.where("userId").is(userId));
-            Update blogUpdate = new Update().set("userImage", profileNew);
-
-            mongoTemplate.updateMulti(blogQuery, blogUpdate, Blog.class);
-
-            Query commentQuery = new Query(Criteria.where("userId").is(userId));
-            Update updateQuery = new Update().set("userImage", profileNew);
-
-            mongoTemplate.updateMulti(commentQuery, updateQuery, Comments.class);
-
-
+            blogAndCommentDenormalization.denormalizeCommentAndBlog(userId, profileNew);
         }
         return  saved;
     }
