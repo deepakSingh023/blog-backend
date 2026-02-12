@@ -118,16 +118,26 @@ public class BlogController {
 
     }
 
+    @GetMapping("getUserBlogs")
+    public ResponseEntity<PagedResponse<BlogResponse>> getUserBlogs(
+            @RequestParam(required = true) String userId,
+            @RequestParam(required = false) Instant cursor
+    ){
+        PagedResponse<BlogResponse> blogs= blogService.getBlogs(userId, cursor);
+
+        return ResponseEntity.ok(blogs);
+
+    }
+
     @GetMapping("/getall")
     public ResponseEntity<PagedResponse<BlogResponse>> getAll(
             @RequestParam(required = false) Instant cursor,
-            @RequestParam(defaultValue = "10",required = false ) int limit,
             Authentication auth
     ){
 
         String userId = auth.getName();
 
-        PagedResponse<BlogResponse> blogs= blogService.getBlogs(userId, cursor, limit);
+        PagedResponse<BlogResponse> blogs= blogService.getBlogs(userId, cursor);
 
 
 

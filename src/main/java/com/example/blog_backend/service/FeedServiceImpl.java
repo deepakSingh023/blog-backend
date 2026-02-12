@@ -4,8 +4,10 @@ package com.example.blog_backend.service;
 import com.example.blog_backend.dto.*;
 import com.example.blog_backend.entity.Blog;
 import com.example.blog_backend.entity.Profile;
+import com.example.blog_backend.exceptions.UserDoesntExist;
 import com.example.blog_backend.repository.BlogRepository;
 import com.example.blog_backend.repository.LikesRepository;
+import com.example.blog_backend.repository.ProfileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -33,6 +35,8 @@ public class FeedServiceImpl implements FeedService {
     private final BlogRepository blogRepository;
 
     private final LikesRepository likesRepository;
+
+    private final ProfileRepository profileRepository;
 
 
     @Override
@@ -121,7 +125,7 @@ public class FeedServiceImpl implements FeedService {
         for (Profile profile : profiles) {
             SearchResult result = new SearchResult(
                     "AUTHOR",
-                    profile.getId(),
+                    profile.getUserId(),
                     profile.getUsername(),
                     profile.getUsername(),
                     0.5
@@ -134,4 +138,19 @@ public class FeedServiceImpl implements FeedService {
 
         return results.stream().limit(10).toList();
     }
+
+    @Override
+    public InfoResponse getInfo(String userId){
+
+        Profile profile = profileRepository.findByUserId(userId)
+                .orElseThrow(()->new UserDoesntExist("user doesn't exist"));
+
+        return new InfoResponse(
+                profile.getUsername(),
+                profile.getProfilePic(),
+                profile.getBio()
+        );
+
+    }
+
 }

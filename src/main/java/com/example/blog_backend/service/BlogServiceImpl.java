@@ -166,11 +166,7 @@ public class BlogServiceImpl implements BlogService{
     }
 
     @Override
-    public PagedResponse<BlogResponse> getBlogs(String userId, Instant cursor , int limit){
-
-
-
-
+    public PagedResponse<BlogResponse> getBlogs(String userId, Instant cursor){
 
         List<Blog> blogs;
 

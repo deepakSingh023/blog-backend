@@ -30,10 +30,6 @@ public class ProfileController {
     ){
 
         String userId = auth.getName();
-        System.out.println(">>> SUCCESS: Reached Controller!");
-        System.out.println(">>> User from Auth: " + userId);
-
-        System.out.println(bio);
 
 
         Profile updatedProfile = profileService.updateProfile(userId, bio, image);

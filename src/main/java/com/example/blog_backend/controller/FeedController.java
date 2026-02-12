@@ -2,6 +2,7 @@ package com.example.blog_backend.controller;
 
 
 import com.example.blog_backend.dto.FeedResponse;
+import com.example.blog_backend.dto.InfoResponse;
 import com.example.blog_backend.dto.SearchResult;
 import com.example.blog_backend.service.FeedService;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +42,19 @@ public class FeedController {
         List<SearchResult> result = feedService.getSearch(query);
 
         return ResponseEntity.ok(result);
+
+
+    }
+
+    @GetMapping("/userInfo")
+    public ResponseEntity<InfoResponse> getInfo(
+            @RequestParam(required = true) String userId
+    ){
+
+        InfoResponse response = feedService.getInfo(userId);
+
+        return ResponseEntity.ok(response);
+
 
 
     }

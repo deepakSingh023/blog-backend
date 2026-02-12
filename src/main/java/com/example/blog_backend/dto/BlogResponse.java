@@ -7,24 +7,18 @@ import java.util.List;
 
 public record BlogResponse(
 
-
         String id,
 
         String title,
 
-
         String content,
         List<String> tags,
-
-
-
 
         String image,
 
         Long likes,
 
         Long comments,
-
 
         Instant createdAt
 ) {
