@@ -27,23 +27,21 @@ public class BlogController {
     }
 
 
-    @PostMapping(value="/create" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value="/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BlogResponse> create(
-
-            @RequestPart(value = "image" , required = true) MultipartFile image,
-            @RequestPart(value = "createBlog" , required=true ) CreateBlogDto data,
+            @RequestPart(value = "image", required = true) MultipartFile image,
+            @RequestPart(value = "createBlog", required = true) CreateBlogDto data,
             Authentication auth
-            ){
-
+    ) {
         System.out.print("reached blog controller");
 
         String userId = auth.getName();
 
-        Blog response = blogService.createBlog(userId,data, image);
+        Blog response = blogService.createBlog(userId, data, image);
 
         BlogResponse filtered = new BlogResponse(
-                response.getTitle(),
                 response.getId(),
+                response.getTitle(),
                 response.getContent(),
                 response.getTags(),
                 response.getImage(),
@@ -53,11 +51,6 @@ public class BlogController {
         );
 
         return ResponseEntity.ok(filtered);
-
-        // never pass the entity directly to the response map it to a dto then send entity have sensitive data
-
-
-
     }
 
     @PutMapping(value="/update",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
