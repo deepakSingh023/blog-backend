@@ -115,19 +115,6 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public ReturnProfile getProfile(String userId){
 
-        UUID userUuid;
-
-        try{
-            userUuid = UUID.fromString(userId);
-
-        }catch(IllegalArgumentException ex){
-            throw new RuntimeException("Illegal id format");
-        }
-
-        if(!authRepository.existsById(userUuid)){
-            throw new UserDoesntExist(" user doesnt exist");
-        }
-
         Profile profile = profileRepository.findByUserId(userId)
                 .orElseThrow(()-> new UserDoesntExist("no profile found for user"));
 
