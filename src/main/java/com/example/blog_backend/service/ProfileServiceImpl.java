@@ -16,6 +16,8 @@ import com.example.blog_backend.repository.AuthRepository;
 import com.example.blog_backend.repository.ProfileRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -30,6 +32,8 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class ProfileServiceImpl implements ProfileService {
+
+    Logger log = LoggerFactory.getLogger(ProfileServiceImpl.class);
 
     private final ProfileRepository profileRepository;
     private final ImageStorageService imageStorageService;
@@ -74,6 +78,9 @@ public class ProfileServiceImpl implements ProfileService {
 
         String profileNew= null;
 
+
+        long start = System.currentTimeMillis();
+
         if (image != null && !image.isEmpty()) {
 
             if (!image.getContentType().startsWith("image/")) {
@@ -90,6 +97,10 @@ public class ProfileServiceImpl implements ProfileService {
             profileNew = url.profileUrl();
 
         }
+
+        long end = System.currentTimeMillis();
+
+        log.info("service = profile service  method = update-profile  latencyMs = {}",end-start);
 
 
 

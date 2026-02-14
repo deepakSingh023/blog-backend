@@ -16,6 +16,8 @@ import com.example.blog_backend.repository.LikesRepository;
 import com.example.blog_backend.repository.ProfileRepository;
 import com.example.blog_backend.util.BlogMapper;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.security.access.AccessDeniedException;
@@ -34,6 +36,8 @@ public class BlogServiceImpl implements BlogService{
     private final ImageStorageService imageStorageService;
     private final LikesRepository likesRepository;
     private final ProfileRepository profileRepository;
+
+    Logger log = LoggerFactory.getLogger(BlogServiceImpl.class);
 
 
     public BlogServiceImpl(
@@ -73,7 +77,11 @@ public class BlogServiceImpl implements BlogService{
 
         }
 
+        long start = System.currentTimeMillis();
+
         CloudinaryUploadResult links = imageStorageService.uploadProfileImage(image, ImageType.BLOG, FolderType.BLOG);
+
+        log.info("method = Create-blog   latency={} type=image-upload",System.currentTimeMillis()-start);
 
         Blog create = Blog.builder()
                 .userId(userId)
