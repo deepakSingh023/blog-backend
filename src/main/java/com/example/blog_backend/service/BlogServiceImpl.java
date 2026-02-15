@@ -205,7 +205,7 @@ public class BlogServiceImpl implements BlogService{
         Blog blog = blogRepository.findById(blogId)
                 .orElseThrow(()-> new BlogNotFound("blog not found"));
 
-        Likes like = likesRepository.findByUserId(userId);
+        Likes like = likesRepository.findByBlogIdAndUserId(blogId,userId);
 
         SingleBlogResponse res = new SingleBlogResponse(
                 blog.getId(),

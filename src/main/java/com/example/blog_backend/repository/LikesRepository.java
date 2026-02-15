@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface LikesRepository extends MongoRepository<Likes, String> {
     boolean existsByUserIdAndBlogId(String userId, String blogId);
 
-    Optional<Likes> findByUserIdAndBlogId(String userId, String blogId);
+    Optional<Likes>  findByUserIdAndBlogId(String userId, String blogId);
 
     @Query(
             value = "{ 'userId': ?0, 'blogId': { $in: ?1 } }",
@@ -24,5 +24,5 @@ public interface LikesRepository extends MongoRepository<Likes, String> {
     );
 
 
-    Likes findByUserId(String userId);
+    Likes findByBlogIdAndUserId(String blogId,String userId);
 }
