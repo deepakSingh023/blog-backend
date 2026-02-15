@@ -111,12 +111,12 @@ public class LikesCommentServiceImpl implements LikesCommentService{
         }
 
         if(commentRepository.existsByUserIdAndBlogId(userId , content.blogId())){
-            throw new CommentAlreadyExists("cannot create multipel comment for a single post by same user");
+            throw new CommentAlreadyExists("cannot create multiple comment for a single post by same user");
 
         }
 
         Profile profile = profileRepository.findByUserId(userId)
-                .orElseThrow(()-> new UserDoesntExist("user doesnt exist"));
+                .orElseThrow(()-> new UserDoesntExist("user doesn't exist"));
 
         Comments comment = Comments.builder()
                 .userId(userId)

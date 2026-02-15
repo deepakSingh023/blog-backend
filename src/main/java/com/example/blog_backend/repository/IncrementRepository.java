@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -17,6 +18,8 @@ public class IncrementRepository {
 
     private final MongoTemplate mongoTemplate;
 
+
+    @Async("decIncExecutor")
     public boolean commentIncrement(String blogId){
         UpdateResult result = mongoTemplate.updateFirst(
                 Query.query(Criteria.where("_id").is(blogId)),
@@ -27,6 +30,7 @@ public class IncrementRepository {
         return result.getMatchedCount()==1;
     }
 
+    @Async("decIncExecutor")
     public boolean likesIncrement(String blogId){
         UpdateResult result = mongoTemplate.updateFirst(
                 Query.query(Criteria.where("_id").is(blogId)),
@@ -37,6 +41,7 @@ public class IncrementRepository {
         return result.getMatchedCount()==1;
     }
 
+    @Async("decIncExecutor")
     public boolean likesDecrement(String blogId){
         UpdateResult result = mongoTemplate.updateFirst(
                 Query.query(Criteria.where("_id").is(blogId)),
@@ -47,6 +52,7 @@ public class IncrementRepository {
         return result.getMatchedCount()==1;
     }
 
+    @Async("decIncExecutor")
     public boolean commentDecrement(String blogId){
         UpdateResult result = mongoTemplate.updateFirst(
                 Query.query(Criteria.where("_id").is(blogId)),

@@ -27,6 +27,20 @@ public class AsyncConfig {
         return thread;
     }
 
+    @Bean("decIncExecutor")
+    public Executor likeAndCommentExecutor(){
+
+        ThreadPoolTaskExecutor thread = new ThreadPoolTaskExecutor();
+
+        thread.setCorePoolSize(20);
+        thread.setMaxPoolSize(20);
+        thread.setQueueCapacity(100);
+        thread.setThreadNamePrefix("likeAndComment-");
+        thread.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+        thread.initialize();
+        return thread;
+    }
+
 
 
 }
