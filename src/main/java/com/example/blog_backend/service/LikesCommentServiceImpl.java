@@ -10,6 +10,8 @@ import com.example.blog_backend.exceptions.*;
 import com.example.blog_backend.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -20,6 +22,9 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class LikesCommentServiceImpl implements LikesCommentService{
+
+
+    Logger log = LoggerFactory.getLogger(LikesCommentServiceImpl.class);
 
     private final LikesRepository likesRepository;
 
@@ -37,13 +42,11 @@ public class LikesCommentServiceImpl implements LikesCommentService{
     public boolean createLikes(String userId,String blogId){
 
         if (likesRepository.existsByUserIdAndBlogId(userId, blogId)) {
-            throw new LikeAlreadyExist("liek already exists");
+            throw new LikeAlreadyExist("like already exists");
         }
 
-
-
         if(!blogRepository.existsById(blogId)){
-            throw new BlogNotFound("blog doesnt exist");
+            throw new BlogNotFound("blog doesn't exist");
         }
 
 
@@ -55,7 +58,12 @@ public class LikesCommentServiceImpl implements LikesCommentService{
 
         likesRepository.save(like);
 
+        long start = System.currentTimeMillis();
+
+
         incrementRepository.likesIncrement(blogId);
+
+        log.info("api = increment  latencyMs={}",System.currentTimeMillis()-start);
 
         return true;
 
@@ -77,7 +85,12 @@ public class LikesCommentServiceImpl implements LikesCommentService{
         }
 
         likesRepository.delete(like);
+
+        long start = System.currentTimeMillis();
+
         incrementRepository.likesDecrement(blogId);
+
+        log.info("api = decrease latencyMs={}",System.currentTimeMillis()-start);
 
     }
 
