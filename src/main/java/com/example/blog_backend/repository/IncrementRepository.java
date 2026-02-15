@@ -23,7 +23,7 @@ public class IncrementRepository {
     public void commentIncrement(String blogId){
         UpdateResult result = mongoTemplate.updateFirst(
                 Query.query(Criteria.where("_id").is(blogId)),
-                new Update().inc("comment",1),
+                new Update().inc("comments",1),
                 Blog.class
         );
     }
@@ -52,7 +52,7 @@ public class IncrementRepository {
     public void commentDecrement(String blogId){
         UpdateResult result = mongoTemplate.updateFirst(
                 Query.query(Criteria.where("_id").is(blogId)),
-                new Update().inc("comment",-1),
+                new Update().inc("comments",-1),
                 Blog.class
         );
 
