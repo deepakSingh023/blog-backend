@@ -99,20 +99,8 @@ public class LikesCommentServiceImpl implements LikesCommentService{
     @Transactional
     public CommentResponse createComment(String userId, CommentCreation content){
 
-        UUID userUuid;
-        try{
-            userUuid = UUID.fromString(userId);
-        }catch(IllegalArgumentException ex){
-            throw new IllegalArgumentException("user id is wrong");
-        }
-
-        if(!authRepository.existsById(userUuid)){
-            throw new UserDoesntExist("user doesnt exist");
-        }
-
         if(commentRepository.existsByUserIdAndBlogId(userId , content.blogId())){
             throw new CommentAlreadyExists("cannot create multiple comment for a single post by same user");
-
         }
 
         Profile profile = profileRepository.findByUserId(userId)
