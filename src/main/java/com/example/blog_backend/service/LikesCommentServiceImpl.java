@@ -41,16 +41,6 @@ public class LikesCommentServiceImpl implements LikesCommentService{
         }
 
 
-        UUID userUuid;
-        try {
-            userUuid = UUID.fromString(userId);
-        }catch(IllegalArgumentException ex){
-            throw new IllegalArgumentException("wrong user id");
-        }
-
-        if(!authRepository.existsById(userUuid)){
-            throw new UserDoesntExist("user doesnt exist");
-        }
 
         if(!blogRepository.existsById(blogId)){
             throw new BlogNotFound("blog doesnt exist");
