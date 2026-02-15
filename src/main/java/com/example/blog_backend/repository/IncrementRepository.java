@@ -20,47 +20,42 @@ public class IncrementRepository {
 
 
     @Async("decIncExecutor")
-    public boolean commentIncrement(String blogId){
+    public void commentIncrement(String blogId){
         UpdateResult result = mongoTemplate.updateFirst(
                 Query.query(Criteria.where("_id").is(blogId)),
                 new Update().inc("comment",1),
                 Blog.class
         );
-
-        return result.getMatchedCount()==1;
     }
 
     @Async("decIncExecutor")
-    public boolean likesIncrement(String blogId){
+    public void likesIncrement(String blogId){
         UpdateResult result = mongoTemplate.updateFirst(
                 Query.query(Criteria.where("_id").is(blogId)),
                 new Update().inc("likes",1),
                 Blog.class
         );
 
-        return result.getMatchedCount()==1;
     }
 
     @Async("decIncExecutor")
-    public boolean likesDecrement(String blogId){
+    public void likesDecrement(String blogId){
         UpdateResult result = mongoTemplate.updateFirst(
                 Query.query(Criteria.where("_id").is(blogId)),
                 new Update().inc("likes",-1),
                 Blog.class
         );
 
-        return result.getMatchedCount()==1;
     }
 
     @Async("decIncExecutor")
-    public boolean commentDecrement(String blogId){
+    public void commentDecrement(String blogId){
         UpdateResult result = mongoTemplate.updateFirst(
                 Query.query(Criteria.where("_id").is(blogId)),
                 new Update().inc("comment",-1),
                 Blog.class
         );
 
-        return result.getMatchedCount()==1;
     }
 
 
