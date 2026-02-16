@@ -70,7 +70,6 @@ public class ProfileServiceImpl implements ProfileService {
         Profile profile = profileRepository.findByUserId(userId)
                 .orElseThrow(() -> new UserDoesntExist("profile doesnt exist"));
 
-        System.out.print(profile);
 
         if (bio != null) {
             profile.setBio(bio);

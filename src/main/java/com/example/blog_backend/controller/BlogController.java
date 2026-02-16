@@ -33,7 +33,6 @@ public class BlogController {
             @RequestPart(value = "createBlog", required = true) CreateBlogDto data,
             Authentication auth
     ) {
-        System.out.print("reached blog controller");
 
         String userId = auth.getName();
 
@@ -62,8 +61,6 @@ public class BlogController {
     ){
 
         String userId = auth.getName();
-
-        System.out.println(data.blogId());
 
         Blog response = blogService.updateBlog(userId, data, image);
 

@@ -43,8 +43,9 @@ public class BlogServiceImpl implements BlogService{
     public BlogServiceImpl(
             BlogRepository blogRepository,
             AuthRepository authRepository,
-            ImageStorageService imageStorageService, ProfileRepository profileRepository, LikesRepository likesRepository) {
-        System.out.println("🔴 BlogServiceImpl CONSTRUCTOR called");
+            ImageStorageService imageStorageService,
+            ProfileRepository profileRepository,
+            LikesRepository likesRepository) {
         this.blogRepository = blogRepository;
         this.authRepository = authRepository;
         this.imageStorageService = imageStorageService;
