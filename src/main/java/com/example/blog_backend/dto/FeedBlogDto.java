@@ -5,6 +5,7 @@ import java.util.List;
 
 public record FeedBlogDto(
         String id,
+        String userId,
         String title,
         String content,
         String image,

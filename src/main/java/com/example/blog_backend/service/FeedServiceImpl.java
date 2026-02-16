@@ -70,6 +70,7 @@ public class FeedServiceImpl implements FeedService {
         List<FeedBlogDto> feedBlogs = blogs.stream()
                 .map(blog -> new FeedBlogDto(
                         blog.getId(),
+                        blog.getUserId(),
                         blog.getTitle(),
                         blog.getContent(),
                         blog.getImage(),
