@@ -8,6 +8,8 @@ public record SingleBlogResponse(
 
         String id,
 
+        String userId,
+
         String title,
 
 

@@ -210,6 +210,7 @@ public class BlogServiceImpl implements BlogService{
 
         SingleBlogResponse res = new SingleBlogResponse(
                 blog.getId(),
+                blog.getUserId(),
                 blog.getTitle(),
                 blog.getContent(),
                 blog.getTags(),
